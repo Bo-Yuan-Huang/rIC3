@@ -218,9 +218,10 @@ impl Frontend for BtorFrontend {
 
         tf.trans_sym(&mut wsym);
         self.tf.extend(tf);
-        // let btor = wts.to_btor_with_sym(&wsym);
-        // btor.to_file("simp.btor");
-        // panic!();
+        // DEBUG (ri-solve G1): RIC3_DUMP_SIMP=<path> dumps the simplified word-level system as BTOR2
+        if let Ok(path) = std::env::var("RIC3_DUMP_SIMP") {
+            wts.to_btor_with_sym(&wsym).to_file(&path);
+        }
         let (ts, bb_rst) = wts.bitblast_to_ts();
         self.bb_rst = Some(bb_rst);
         self.ts = Some(ts.clone());

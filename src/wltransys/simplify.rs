@@ -68,7 +68,14 @@ impl WlTransys {
         if let Some(t) = ConstraintInputPass::apply(&mut ctx, self, ()) {
             tf.add(t);
         }
-        if let Some(t) = InnTermSimpPass::apply(&mut ctx, self, OptLevel::O3) {
+        // DEBUG (ri-solve G1): RIC3_WL_OPT=0|1|2|3 overrides the second (O3) word-level pass
+        let lvl = match std::env::var("RIC3_WL_OPT").ok().as_deref() {
+            Some("0") => OptLevel::O0,
+            Some("1") => OptLevel::O1,
+            Some("2") => OptLevel::O2,
+            _ => OptLevel::O3,
+        };
+        if let Some(t) = InnTermSimpPass::apply(&mut ctx, self, lvl) {
             tf.add(t);
         }
         if let Some(t) = CoiPass::apply(&mut ctx, self, ()) {
